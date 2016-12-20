@@ -27,33 +27,62 @@ namespace NameGenerator
                 Letter currentLetter = new Letter((char)i);
                 letters.Add(currentLetter.Character, currentLetter);
             }
+
+            // Add in a starting character to determine what letter to start with
+            Letter BreakLetter = new Letter('\n');
+            letters.Add(BreakLetter.Character, BreakLetter);
         }
 
         /// <summary>
         /// A constructor to create a name generator and automatically load in names.
         /// </summary>
         /// <param name="names">An IEnumerable of names to generate names with</param>
-        public NameGenerator(IEnumerable<String> names)
+        public NameGenerator(IEnumerable<String> names) : this()
         {
-            throw new NotImplementedException();
+            LoadNames(names);
         }
 
         /// <summary>
-        /// Load in names to be used to generate names with.
+        /// Load in names to be used to generate new names with.
         /// </summary>
         /// <param name="names">names to be loaded in</param>
         public void LoadNames(IEnumerable<String> names)
         {
+            //TODO: Implement!
             throw new NotImplementedException();
         }
 
         /// <summary>
-        /// Generates a random name based on the names loaded in.
+        /// Generates a random name based on the names loaded in.  It always ends in a newline 
+        /// character
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A name ending with a newline character</returns>
         public String GenerateName()
         {
-            throw new NotImplementedException();
+            // Form String
+            StringBuilder result = new StringBuilder();
+
+            char newLetter = '\n';
+
+            // Keep getting new letters until we get an newline character
+            while (true)
+            {
+                // generate the next letter
+                newLetter = letters[newLetter].NextLetter();
+
+                // add it to the string builder
+                result.Append(newLetter);
+
+                // Check if we are done
+                if (newLetter.Equals('\n'))
+                {
+                    return result.ToString();
+                }
+            }
+
+            // there is a problem if we got here.
+            throw new Exception("Something went wrong while generating a name.  Somehow it broke" 
+                + " out of the loop!");
         }
 
         /// <summary>
@@ -61,8 +90,9 @@ namespace NameGenerator
         /// </summary>
         private class Letter
         {
-            private Dictionary<Char, percent> percentages;
-            Random rando = new Random();
+            // An array of percentages.  0 represents 'a', 25 represents 'z', 26 represents '\n'
+            private Percent[] percentages;
+            Random rando;
 
             // The character that this letter represents
             public char Character
@@ -72,26 +102,52 @@ namespace NameGenerator
                 private set;
             }
 
-            
+            /// <summary>
+            /// Constructor for creating a letter
+            /// </summary>
+            /// <param name="c">The character that this letter represents</param>
             public Letter(char c)
             {
                 Character = c;
 
-                percentages = new Dictionary<char, decimal>();
+                percentages = new Percent[27];
+
+                rando = new Random();
 
                 // Fill percentages with percentages.  Each letter starts with 0% chance.
-                for (int i = 65; i <= 90; i++)
+                for (int i = 0; i <= 25; i++)
                 {
-                    percentages.Add((char)i, 0);
+                    percentages[i] = new Percent();
                 }
 
-                // the ending character starts with 100% chance of being the next character.
-                percentages.Add('\n', 1);
+                // The ending character starts with 100% chance of being the next character.
+                percentages[26] = new Percent(1, 0, 0);
             }
 
-            public void addInstance()
+            /// <summary>
+            /// Called for when there is another instance of this character.  Updates the totals
+            /// for this letter and the character it goes to.
+            /// </summary>
+            /// <param name="c">The character that follows this one</param>
+            public void AddOccurance(char c)
             {
+                // Find the location of the next character
+                int location = c - 65;
 
+                // Go through each and update them
+                for(int i = 0; i <= 26; i++)
+                {
+                    // If the location is the given character it is a success
+                    if (i == location)
+                    {
+                        percentages[i].successfulEvent();
+
+                    // Otherwise it was unsuccessful
+                    } else
+                    {
+                        percentages[i].unsuccessfulEvent();
+                    }
+                }
             }
 
             /// <summary>
@@ -100,14 +156,94 @@ namespace NameGenerator
             /// <returns>The next letter of the name</returns>
             public char NextLetter()
             {
-                int randInt = rando.Next();
+                //TODO: Implement!
+                throw new NotImplementedException();
             }
 
-            struct percent
+            /// <summary>
+            /// Internal class to act like a percentage.  The number of successfull events and 
+            /// total can be changed to alter the value.
+            /// </summary>
+            internal class Percent
             {
-                private double percantage;
-                private double total;
-                private double events;
+                public double percentage;
+                public int total;
+                public int successes;
+
+                /// <summary>
+                /// Creates a percentage.  Percentage must be in [0,1], total and successes must 
+                /// be positive, and successes must be less than total.  If invalid throws an
+                /// ArgumentException
+                /// </summary>
+                /// <param name="percentage">The percentage</param>
+                /// <param name="total">The total number of events</param>
+                /// <param name="events">The number of successful events</param>
+                internal Percent(double percentage, int total, int successes)
+                {
+                    // Make sure the arguments are valid
+                    if (successes > total || total < 0 || 
+                        successes < 0 || percentage > 1 || percentage < 0)
+                    {
+                        throw new ArgumentException("The arguments of this constructor are invalid");
+                    }
+
+                    // Set them if valid
+                    this.percentage = percentage;
+                    this.total = total;
+                    this.successes = successes;
+                }
+
+                /// <summary>
+                /// Creates a percentage.  Everythins starts as 0.
+                /// </summary>
+                internal Percent() : this(0, 0, 0)
+                {
+                }
+
+                /// <summary>
+                /// Increases the number of successful events.
+                /// </summary>
+                internal void successfulEvent()
+                {
+                    total++;
+                    successes++;
+
+                    recalculate();
+                }
+
+                /// <summary>
+                /// Does not increase the number of successful events but does increase the total.
+                /// </summary>
+                internal void unsuccessfulEvent()
+                {
+                    total++;
+                    recalculate();
+                }
+
+                /// <summary>
+                /// Recalculates the value of the percentage based on the number of total events 
+                /// and successes.  If there are 0 total events the probability is set to 0.
+                /// </summary>
+                internal void recalculate()
+                {
+                    if (total == 0)
+                    {
+                        percentage = 0;
+                    } else
+                    {
+                        percentage = (double)successes / (double)total;
+                    }
+                }
+
+                /// <summary>
+                /// Clears this percentage.  Everything is set to 0.
+                /// </summary>
+                internal void clear()
+                {
+                    percentage = 0;
+                    total = 0;
+                    successes = 0;
+                }
             }
         }
     }
