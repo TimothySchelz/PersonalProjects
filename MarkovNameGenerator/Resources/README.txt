@@ -11,9 +11,4 @@ Name Generator has a dictionary of Letter.  Each Letter keeps track of the proba
 of going to each other letter.
 
 TODO:
-NextLetter() should be simple.  Use Random.NextDouble() and go through and check what it 
-is less then.
-
-LoadNames() pull out the names and plug into the letters so that the probabilities work
-
 Implement Multithreading

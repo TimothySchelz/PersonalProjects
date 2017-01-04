@@ -48,8 +48,35 @@ namespace NameGenerator
         /// <param name="names">names to be loaded in</param>
         public void LoadNames(IEnumerable<String> names)
         {
-            //TODO: Implement!
-            throw new NotImplementedException();
+            // Go through each name
+            foreach (String name in names)
+            {
+                // Start on the break character
+                char currentChar = '\n';
+                char nextChar = '\n';
+
+                // Go through each letter of the name starting with the break character
+                for (int i = 0; i < name.Length; i++)
+                {
+                    // Get the next char
+                    if (i == name.Length - 1)
+                    {
+                        // There is no next character and so the next character will be the 
+                        // break char
+                        nextChar = '\n';
+                    }
+                    else
+                    { 
+                        // There is another character and so we set it
+                        nextChar = name[i];
+                    }
+                    // Notify the letter that there has been another occurance
+                    letters[currentChar].AddOccurance(nextChar);
+
+                    // Move the current char ahead to the next letter
+                    currentChar = nextChar;
+                }
+            }
         }
 
         /// <summary>
@@ -151,13 +178,29 @@ namespace NameGenerator
             }
 
             /// <summary>
-            /// Returns what letter should come after this one.  Random based on the probability distribution of this letter.
+            /// Returns what letter should come after this one.  Random based on the probability
+            /// distribution of this letter.
             /// </summary>
             /// <returns>The next letter of the name</returns>
             public char NextLetter()
             {
-                //TODO: Implement!
-                throw new NotImplementedException();
+                // a randomly choosen double in [0,1], and a sum to keep track of when to return
+                double RanNum = rando.NextDouble();
+                double currentSum = 0;
+
+                // Go through each entry in percentages.  If RanNum is in the current range return
+                // that letter.
+                for (int i = 0; i < percentages.Count(); i++)
+                {
+                    currentSum += percentages[i].percentage;
+
+                    if (RanNum < currentSum)
+                    {
+                        return (char)(i + 60);
+                    }
+                }
+
+                return '\n';
             }
 
             /// <summary>
