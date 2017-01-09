@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NameGenerator
+namespace MarkovNameGenerator
 {
     /// <summary>
     /// A random name generator that uses a Markov process to generate the names
@@ -49,8 +49,9 @@ namespace NameGenerator
         public void LoadNames(IEnumerable<String> names)
         {
             // Go through each name
-            foreach (String name in names)
+            foreach (String nameString in names)
             {
+                String name = nameString.ToUpper();
                 // Start on the break character
                 char currentChar = '\n';
                 char nextChar = '\n';
@@ -87,7 +88,7 @@ namespace NameGenerator
         public String GenerateName()
         {
             // Form String
-            StringBuilder result = new StringBuilder();
+            String result = "";
 
             char newLetter = '\n';
 
@@ -98,7 +99,7 @@ namespace NameGenerator
                 newLetter = letters[newLetter].NextLetter();
 
                 // add it to the string builder
-                result.Append(newLetter);
+                result += newLetter;
 
                 // Check if we are done
                 if (newLetter.Equals('\n'))
@@ -196,7 +197,7 @@ namespace NameGenerator
 
                     if (RanNum < currentSum)
                     {
-                        return (char)(i + 60);
+                        return (char)(i + 'A');
                     }
                 }
 
