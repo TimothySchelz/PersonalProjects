@@ -52,16 +52,71 @@ namespace NameGeneratorTests
         {
             nameGen.LoadNames(Single3);
             String result = nameGen.GenerateName();
+            Console.WriteLine(result);
             Assert.IsTrue(result.Length > 0);
         }
 
 
         [TestMethod]
-        public void checkNewLine()
+        public void checkFullVaried()
         {
             nameGen.LoadNames(FullVaried);
             String result = nameGen.GenerateName();
-            Console.WriteLine();
+            Console.WriteLine(result);
+            Assert.IsTrue(result.Length > 0);
+        }
+
+        [TestMethod]
+        public void checkEmptyList()
+        {
+            nameGen.LoadNames(EmptyList);
+            String result = nameGen.GenerateName();
+            Console.WriteLine(result);
+            Assert.IsTrue(result.Length > 0);
+        }
+
+        [TestMethod]
+        public void checkABC()
+        {
+            nameGen.LoadNames(ABC);
+            String result = nameGen.GenerateName();
+            Console.WriteLine(result);
+            Assert.IsTrue(result.Length > 0);
+        }
+
+        [TestMethod]
+        public void checkABC3()
+        {
+            nameGen.LoadNames(ABC3);
+            String result = nameGen.GenerateName();
+            Console.WriteLine(result);
+            Assert.IsTrue(result.Length > 0);
+        }
+
+        [TestMethod]
+        public void checkMixedCaseSingle3()
+        {
+            nameGen.LoadNames(MixedCaseSingle3);
+            String result = nameGen.GenerateName();
+            Console.WriteLine(result);
+            Assert.IsTrue(result.Length > 0);
+        }
+
+        [TestMethod]
+        public void checkNone0()
+        {
+            nameGen.LoadNames(None0);
+            String result = nameGen.GenerateName();
+            Console.WriteLine(result);
+            Assert.IsTrue(result.Length > 0);
+        }
+
+        [TestMethod]
+        public void checkSingleVaried()
+        {
+            nameGen.LoadNames(SingleVaried);
+            String result = nameGen.GenerateName();
+            Console.WriteLine(result);
             Assert.IsTrue(result.Length > 0);
         }
     }

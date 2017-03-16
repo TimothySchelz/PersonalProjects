@@ -19,18 +19,7 @@ namespace MarkovNameGenerator
         /// </summary>
         public NameGenerator()
         {
-            letters = new Dictionary<char, Letter>();
-            
-            //Fill letters with letters
-            for (int i = 65; i <= 90; i++)
-            {
-                Letter currentLetter = new Letter((char)i);
-                letters.Add(currentLetter.Character, currentLetter);
-            }
-
-            // Add in a starting character to determine what letter to start with
-            Letter BreakLetter = new Letter('\n');
-            letters.Add(BreakLetter.Character, BreakLetter);
+            this.clear();
         }
 
         /// <summary>
@@ -114,6 +103,42 @@ namespace MarkovNameGenerator
         }
 
         /// <summary>
+        /// Generates a bunch of names.
+        /// </summary>
+        /// <param name="NumOfNames">The number of names desired</param>
+        /// <returns>An IEnumerable with a bunch of names in it</returns>
+        public IEnumerable<String> GenerateNames(int NumOfNames)
+        {
+            List<String> result = new List<string>();
+
+            for(int i = 0; i < NumOfNames; i++)
+            {
+                result.Add(GenerateName());
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Clears this name generator.  Setting everything back to the default.
+        /// </summary>
+        public void clear()
+        {
+            letters = new Dictionary<char, Letter>();
+
+            //Fill letters with letters
+            for (int i = 65; i <= 90; i++)
+            {
+                Letter currentLetter = new Letter((char)i);
+                letters.Add(currentLetter.Character, currentLetter);
+            }
+
+            // Add in a starting character to determine what letter to start with
+            Letter BreakLetter = new Letter('\n');
+            letters.Add(BreakLetter.Character, BreakLetter);
+        }
+
+        /// <summary>
         /// A private helper class to store all the info that goes along with each letter
         /// </summary>
         private class Letter
@@ -191,7 +216,7 @@ namespace MarkovNameGenerator
 
                 // Go through each entry in percentages.  If RanNum is in the current range return
                 // that letter.
-                for (int i = 0; i < percentages.Count(); i++)
+                for (int i = 0; i < percentages.Count() - 1; i++)
                 {
                     currentSum += percentages[i].percentage;
 
