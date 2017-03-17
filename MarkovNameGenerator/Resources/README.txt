@@ -11,6 +11,4 @@ Name Generator has a dictionary of Letter.  Each Letter keeps track of the proba
 of going to each other letter.
 
 TODO:
-Implement Multithreading
 File Reader
-Name length checking?
