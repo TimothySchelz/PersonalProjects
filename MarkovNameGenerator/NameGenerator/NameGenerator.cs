@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace MarkovNameGenerator
@@ -38,53 +37,10 @@ namespace MarkovNameGenerator
         /// <param name="names">names to be loaded in</param>
         public void LoadNames(IEnumerable<String> names)
         {
-
-            // Holds all the threads
-            List<Thread> threads = new List<Thread>();
-
-            // Go through each name starting a thread to load it in
+            // Go through each name
             foreach (String nameString in names)
             {
-                // Create a name loader wrapper
-                NameLoader Loader = new NameLoader(nameString, ref letters);
-
-                // Create the thread
-                Thread Thready = new Thread(Loader.LoadName);
-
-                //Start the thread
-                Thready.Start();
-
-                // add the thread to the list
-                threads.Add(Thready);
-            }
-
-            // Join all threads
-            foreach(Thread thready in threads)
-            {
-                thready.Join();
-            }
-        }
-
-        /// <summary>
-        /// A wrapper class for a name to do multi-threading with
-        /// </summary>
-        private class NameLoader
-        {
-            private string name;
-            private Dictionary<char, Letter> letters;
-
-            /// <summary>
-            /// Constructor to take in the name
-            /// </summary>
-            /// <param name="name"></param>
-            public NameLoader(string name, ref Dictionary<char, Letter> Letters)
-            {
-                this.name = name.ToUpper();
-                this.letters = Letters;
-            }
-
-            public void LoadName()
-            {
+                String name = nameString.ToUpper();
                 // Start on the break character
                 char currentChar = '\n';
                 char nextChar = '\n';
@@ -100,7 +56,7 @@ namespace MarkovNameGenerator
                         nextChar = '\n';
                     }
                     else
-                    {
+                    { 
                         // There is another character and so we set it
                         nextChar = name[i];
                     }
@@ -112,7 +68,6 @@ namespace MarkovNameGenerator
                 }
             }
         }
-
 
         /// <summary>
         /// Generates a random name based on the names loaded in.  It always ends in a newline 
@@ -229,25 +184,21 @@ namespace MarkovNameGenerator
             /// <param name="c">The character that follows this one</param>
             public void AddOccurance(char c)
             {
-                lock (this)
+                // Find the location of the next character
+                int location = c - 65;
+
+                // Go through each and update them
+                for(int i = 0; i <= 26; i++)
                 {
-                    // Find the location of the next character
-                    int location = c - 65;
-
-                    // Go through each and update them
-                    for (int i = 0; i <= 26; i++)
+                    // If the location is the given character it is a success
+                    if (i == location)
                     {
-                        // If the location is the given character it is a success
-                        if (i == location)
-                        {
-                            percentages[i].successfulEvent();
+                        percentages[i].successfulEvent();
 
-                            // Otherwise it was unsuccessful
-                        }
-                        else
-                        {
-                            percentages[i].unsuccessfulEvent();
-                        }
+                    // Otherwise it was unsuccessful
+                    } else
+                    {
+                        percentages[i].unsuccessfulEvent();
                     }
                 }
             }
