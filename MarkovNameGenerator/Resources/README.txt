@@ -8,9 +8,5 @@ names.  Then to get a name out call GenerateName().
 
 Implementation:
 Name Generator has a dictionary of Letter.  Each Letter keeps track of the probability
-of going to each other letter.
-
-TODO:
-Implement Multithreading
-File Reader
-Name length checking?
+of going to each other letter.  This creates a Markov process to, hopefully, create
+names that are similar but slightly different to the input.
